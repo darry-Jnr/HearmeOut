@@ -3,6 +3,8 @@
 
 import { showStatus } from "./ui";
 
+let currentStream: MediaStream | null = null;
+
 export async function startCamera(): Promise<HTMLVideoElement> {
   const video = document.querySelector<HTMLVideoElement>("#camera")!;
 
@@ -17,9 +19,19 @@ export async function startCamera(): Promise<HTMLVideoElement> {
     audio: true,
   });
 
+  currentStream = stream;
   video.srcObject = stream;
   await video.play();
 
   showStatus("Camera on — sign toward the camera");
   return video;
+}
+
+// Turn the camera (and microphone) off again.
+export function stopCamera() {
+  currentStream?.getTracks().forEach((track) => track.stop());
+  currentStream = null;
+
+  const video = document.querySelector<HTMLVideoElement>("#camera")!;
+  video.srcObject = null;
 }

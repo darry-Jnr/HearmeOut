@@ -18,12 +18,20 @@ export function setListenEnabled(on: boolean) {
   if (!on) setTheySaid("");
 }
 
+// Stop transcribing. (onend will see `enabled` is false and not restart.)
+export function stopListening() {
+  setListenEnabled(false);
+  recognition?.stop();
+  recognition = null;
+}
+
 export function startListening() {
   if (!isListeningSupported()) {
     showStatus("This browser can't transcribe speech — try Chrome.", "error");
     return;
   }
 
+  enabled = true;
   const SpeechRecognitionCtor = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
   recognition = new SpeechRecognitionCtor();
   recognition.lang = "en-US";

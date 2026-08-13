@@ -4,11 +4,16 @@
 
 import "./style.css";
 
-import { startCamera } from "./camera";
+import { startCamera, stopCamera } from "./camera";
 import { Vision } from "./vision";
 import { phraseTracker } from "./translate";
 import { speak } from "./speak";
-import { startListening, setListenEnabled, isListeningSupported } from "./listen";
+import {
+  startListening,
+  stopListening,
+  setListenEnabled,
+  isListeningSupported,
+} from "./listen";
 import { setYouSaid, setTheySaid, showStatus } from "./ui";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
@@ -16,6 +21,7 @@ const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
 const listenToggle = document.querySelector<HTMLInputElement>("#listenToggle")!;
 
 let running = false;
+let animationFrame = 0;
 
 async function startEverything() {
   if (running) return;
@@ -43,9 +49,9 @@ async function startEverything() {
     const tick = () => {
       const detection = vision.detect(video);
       tracker.feed(detection);
-      requestAnimationFrame(tick);
+      animationFrame = requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    animationFrame = requestAnimationFrame(tick);
 
     // 5) Start transcribing the hearing person's replies as captions.
     if (isListeningSupported()) {
@@ -54,7 +60,8 @@ async function startEverything() {
       showStatus("Captions unavailable in this browser — try Chrome.", "error");
     }
 
-    startButton.textContent = "Running";
+    startButton.disabled = false;
+    startButton.textContent = "Stop";
   } catch (err) {
     running = false;
     startButton.disabled = false;
@@ -63,7 +70,28 @@ async function startEverything() {
   }
 }
 
-startButton.addEventListener("click", startEverything);
+function stopEverything() {
+  if (!running) return;
+  running = false;
+
+  cancelAnimationFrame(animationFrame);
+  stopCamera();
+  stopListening();
+
+  setYouSaid("—");
+  setTheySaid("");
+  showStatus("Stopped");
+  startButton.disabled = false;
+  startButton.textContent = "Start";
+}
+
+startButton.addEventListener("click", () => {
+  if (running) {
+    stopEverything();
+  } else {
+    startEverything();
+  }
+});
 
 // The quick-phrase buttons always work, even if the model misses a sign.
 document.querySelectorAll<HTMLButtonElement>("button[data-phrase]").forEach((btn) => {
