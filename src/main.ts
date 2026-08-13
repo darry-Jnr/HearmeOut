@@ -18,6 +18,7 @@ import { setYouSaid, setTheySaid, showStatus } from "./ui";
 import { resetZoom } from "./zoom";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
+const startIcon = document.querySelector<HTMLElement>("#startIcon")!;
 const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
 const listenToggle = document.querySelector<HTMLInputElement>("#listenToggle")!;
 
@@ -58,9 +59,14 @@ typeInput.addEventListener("keydown", (event) => {
 let running = false;
 let animationFrame = 0;
 
-// Start = white, Stop = red (the universal stop signal).
+// Start = white with a play icon, Stop = red with a stop icon.
 function setStartButton(label: "Start" | "Stop") {
-  startButton.textContent = label;
+  startButton.textContent = "";
+  startIcon.innerHTML =
+    label === "Start"
+      ? '<svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>'
+      : '<svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" /></svg>';
+  startButton.append(startIcon, document.createTextNode(label));
   startButton.classList.toggle("bg-white", label === "Start");
   startButton.classList.toggle("text-black", label === "Start");
   startButton.classList.toggle("bg-red-500", label === "Stop");
