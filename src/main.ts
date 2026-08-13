@@ -58,13 +58,22 @@ typeInput.addEventListener("keydown", (event) => {
 let running = false;
 let animationFrame = 0;
 
+// Start = white, Stop = red (the universal stop signal).
+function setStartButton(label: "Start" | "Stop") {
+  startButton.textContent = label;
+  startButton.classList.toggle("bg-white", label === "Start");
+  startButton.classList.toggle("text-black", label === "Start");
+  startButton.classList.toggle("bg-red-500", label === "Stop");
+  startButton.classList.toggle("text-white", label === "Stop");
+}
+
 async function startEverything() {
   if (running) return;
   running = true;
   // Flip the button NOW (before the async camera/model work) so the user
   // always sees it change to "Stop". It only goes back to "Start" on error.
   startButton.disabled = true;
-  startButton.textContent = "Stop";
+  setStartButton("Stop");
 
   try {
     // 1) Turn on the camera (asks the user for permission).
@@ -102,7 +111,7 @@ async function startEverything() {
   } catch (err) {
     running = false;
     startButton.disabled = false;
-    startButton.textContent = "Start";
+    setStartButton("Start");
     showStatus("Could not start: " + (err instanceof Error ? err.message : err), "error");
   }
 }
@@ -119,7 +128,7 @@ function stopEverything() {
   setTheySaid("");
   showStatus("Stopped");
   startButton.disabled = false;
-  startButton.textContent = "Start";
+  setStartButton("Start");
 }
 
 startButton.addEventListener("click", () => {
