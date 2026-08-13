@@ -10,9 +10,19 @@
     <!-- The camera fills the entire screen -->
     <main class="relative h-dvh w-full overflow-hidden">
       <section class="absolute inset-0 bg-neutral-950">
-        <video id="camera" autoplay playsinline muted class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></video>
-        <canvas id="overlay" class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></canvas>
+        <!-- Zooming scales this layer, keeping the video and skeleton in sync -->
+        <div id="zoomLayer" class="absolute inset-0">
+          <video id="camera" autoplay playsinline muted class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></video>
+          <canvas id="overlay" class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></canvas>
+        </div>
       </section>
+
+      <!-- Zoom control: each press steps the zoom by one notch -->
+      <div class="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full border border-neutral-700 bg-black/70 p-1 backdrop-blur-sm">
+        <button id="zoomOut" class="cursor-pointer rounded-full px-3 py-1 text-lg font-bold text-white active:bg-white active:text-black" aria-label="Zoom out">−</button>
+        <span id="zoomValue" class="w-12 text-center text-xs text-neutral-300">1.0×</span>
+        <button id="zoomIn" class="cursor-pointer rounded-full px-3 py-1 text-lg font-bold text-white active:bg-white active:text-black" aria-label="Zoom in">+</button>
+      </div>
 
       <!-- Everything else floats on top of the camera -->
       <div class="absolute inset-0 flex flex-col">

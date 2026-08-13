@@ -15,6 +15,7 @@ import {
   isListeningSupported,
 } from "./listen";
 import { setYouSaid, setTheySaid, showStatus } from "./ui";
+import { resetZoom } from "./zoom";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
 const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
@@ -60,12 +61,15 @@ let animationFrame = 0;
 async function startEverything() {
   if (running) return;
   running = true;
+  // Flip the button NOW (before the async camera/model work) so the user
+  // always sees it change to "Stop". It only goes back to "Start" on error.
   startButton.disabled = true;
-  startButton.textContent = "Starting…";
+  startButton.textContent = "Stop";
 
   try {
     // 1) Turn on the camera (asks the user for permission).
     const video = await startCamera();
+    resetZoom();
 
     // 2) Load the MediaPipe gesture model (downloads ~8 MB once).
     showStatus("Loading the sign recognition model…");
@@ -95,7 +99,6 @@ async function startEverything() {
     }
 
     startButton.disabled = false;
-    startButton.textContent = "Stop";
   } catch (err) {
     running = false;
     startButton.disabled = false;
