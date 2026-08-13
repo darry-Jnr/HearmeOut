@@ -2,7 +2,7 @@
 
 A hackathon proof-of-concept: sign toward the camera and the app speaks your
 words out loud. When the other person replies, their words appear as captions.
-No typing, no buttons, no backend — it all runs in your browser.
+Or just type a message. Everything runs in your browser.
 
 > Honest scope: this prototype recognizes a starter set of hand gestures
 > (hello, yes, no, I love you, etc.), not full ASL. It proves the loop
@@ -17,9 +17,22 @@ npm run dev          # open the printed URL in Chrome
 
 Press **Start**, allow camera + microphone, then sign toward the camera.
 
-- Hold a gesture for ~1 second to make it speak.
-- The colored buttons below always work (backup if the AI misses a sign).
+- Hold a sign for a moment to make it speak.
+- The quick-phrase buttons below always work (backup if the AI misses a sign).
 - The hearing person's speech appears under "They said".
+- **Type** opens a chat box (bottom right) to write a message instead of
+  signing; your sent messages stay there until you close the tab.
+
+### Browser support
+
+- Everything works in Chrome, Edge, Firefox and Safari.
+- Live captions need Chrome or Edge (Safari and Firefox don't have that API yet).
+
+### Controls
+
+- **Start/Stop** — toggles the camera (white with ▶, red with ■).
+- **Zoom (− / +)** — desktop only; phones pinch naturally.
+- **Auto-speak my signs / Captions on** — toggle the two directions.
 
 ### Voice
 
@@ -61,6 +74,8 @@ Each file does one job, in order:
 | `src/translate.ts` | Maps gestures to words, only speaks after you hold a sign |
 | `src/speak.ts` | Speaks text (direct ElevenLabs in dev, `/api/speak` proxy in prod, else browser voice) |
 | `src/listen.ts` | Transcribes the hearing person → captions |
+| `src/typeBox.ts` | The "Type a message" chat box (history kept in sessionStorage) |
+| `src/zoom.ts` | Desktop camera zoom (− / + step control) |
 | `src/ui.ts` | Small helpers for updating the page |
 | `api/speak.ts` | Serverless function that calls ElevenLabs with the hidden key |
 

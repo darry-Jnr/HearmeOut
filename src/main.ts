@@ -16,45 +16,23 @@ import {
 } from "./listen";
 import { setYouSaid, setTheySaid, showStatus } from "./ui";
 import { resetZoom } from "./zoom";
+import { createTypeBox } from "./typeBox";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
 const startIcon = document.querySelector<HTMLImageElement>("#startIcon")!;
 const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
 const listenToggle = document.querySelector<HTMLInputElement>("#listenToggle")!;
 
-// The "Type a message" box.
+// The "Type a message" popup — a separate component that builds its own HTML.
 const typeBtn = document.querySelector<HTMLButtonElement>("#typeBtn")!;
-const typeBox = document.querySelector<HTMLElement>("#typeBox")!;
-const typeInput = document.querySelector<HTMLInputElement>("#typeInput")!;
-const typeSend = document.querySelector<HTMLButtonElement>("#typeSend")!;
-const typeCancel = document.querySelector<HTMLButtonElement>("#typeCancel")!;
-
-function openTypeBox() {
-  typeBox.classList.remove("hidden");
-  typeBox.classList.add("flex");
-  typeInput.focus();
-}
-
-function closeTypeBox() {
-  typeBox.classList.add("hidden");
-  typeBox.classList.remove("flex");
-  typeInput.value = "";
-}
-
-function sendTypedMessage() {
-  const text = typeInput.value.trim();
-  if (!text) return;
-  setYouSaid(text);
-  speak(text);
-  closeTypeBox();
-}
-
-typeBtn.addEventListener("click", openTypeBox);
-typeCancel.addEventListener("click", closeTypeBox);
-typeSend.addEventListener("click", sendTypedMessage);
-typeInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") sendTypedMessage();
+const typeBox = createTypeBox({
+  onSend: (text) => {
+    setYouSaid(text);
+    speak(text);
+  },
 });
+document.querySelector("main")!.append(typeBox.element);
+typeBtn.addEventListener("click", typeBox.open);
 
 let running = false;
 let animationFrame = 0;
