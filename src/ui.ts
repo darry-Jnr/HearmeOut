@@ -6,9 +6,9 @@ const statusEl = document.querySelector<HTMLElement>("#status")!;
 
 export function showStatus(message: string, kind: "info" | "good" | "error" = "info") {
   statusEl.textContent = message;
-  statusEl.classList.remove("text-[#8b91ad]", "text-[#2fd572]", "text-[#ff7b7b]");
+  statusEl.classList.remove("text-neutral-400", "text-white", "font-bold");
   statusEl.classList.add(
-    kind === "good" ? "text-[#2fd572]" : kind === "error" ? "text-[#ff7b7b]" : "text-[#8b91ad]"
+    kind === "good" ? "text-white" : kind === "error" ? "text-white font-bold" : "text-neutral-400"
   );
 }
 

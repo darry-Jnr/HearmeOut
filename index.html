@@ -3,60 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b0d17" />
+    <meta name="theme-color" content="#000000" />
     <title>HearMe Out</title>
   </head>
-  <body class="min-h-dvh bg-[#0b0d17] text-[#eef1ff] font-sans">
-    <main class="mx-auto flex h-dvh max-w-3xl flex-col gap-3 overflow-y-auto px-4 py-4">
+  <body class="min-h-dvh bg-black text-white font-sans">
+    <main class="mx-auto flex h-dvh max-w-3xl flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-6 lg:max-w-4xl xl:max-w-5xl">
 
       <!-- The camera, big and in the middle of the screen -->
-      <section class="relative flex-1 min-h-[320px] overflow-hidden rounded-3xl bg-black">
+      <section class="relative flex-1 min-h-[280px] overflow-hidden rounded-3xl bg-neutral-950 md:min-h-[65vh] lg:min-h-[75vh]">
         <video id="camera" autoplay playsinline muted class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></video>
         <canvas id="overlay" class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></canvas>
         <div class="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
-          <span class="rounded-full bg-black/60 px-4 py-1 text-xs text-[#cfd4ea]">Sign toward the camera</span>
+          <span class="rounded-full bg-black/70 px-4 py-1 text-xs text-neutral-300">Sign toward the camera</span>
         </div>
 
         <!-- What the app heard you sign, floating on the camera -->
-        <div class="pointer-events-none absolute inset-x-3 bottom-3 rounded-2xl bg-black/50 p-3 backdrop-blur-sm">
-          <div class="text-[11px] uppercase tracking-widest text-[#8b91ad]">You said</div>
-          <div id="youSaid" class="text-4xl font-extrabold leading-tight break-words">—</div>
+        <div class="pointer-events-none absolute inset-x-3 bottom-3 rounded-2xl bg-black/60 p-3 backdrop-blur-sm sm:inset-x-4 sm:p-4">
+          <div class="text-[11px] uppercase tracking-widest text-neutral-400">You said</div>
+          <div id="youSaid" class="text-3xl font-extrabold leading-tight break-words sm:text-4xl md:text-5xl">—</div>
         </div>
       </section>
 
       <!-- What the other person said, live captions -->
-      <section class="rounded-2xl border-l-4 border-[#2fd572] bg-[#161a2b] p-3">
-        <div class="text-[11px] uppercase tracking-widest text-[#8b91ad]">They said</div>
-        <div id="theySaid" class="text-2xl font-bold leading-snug break-words">—</div>
+      <section class="rounded-2xl border-l-4 border-white bg-neutral-900 p-3 sm:p-4">
+        <div class="text-[11px] uppercase tracking-widest text-neutral-400">They said</div>
+        <div id="theySaid" class="text-xl font-bold leading-snug break-words sm:text-2xl">—</div>
       </section>
 
       <!-- Quick phrases: always works, even if the AI misses a sign -->
-      <section class="grid grid-cols-4 gap-2">
-        <button data-phrase="Hello!" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Hello</button>
-        <button data-phrase="Thank you!" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Thank you</button>
-        <button data-phrase="Yes" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Yes</button>
-        <button data-phrase="No" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">No</button>
-        <button data-phrase="I need help" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Help</button>
-        <button data-phrase="I love you" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">I love you</button>
-        <button data-phrase="Please wait" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Wait</button>
-        <button data-phrase="Nice to meet you!" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Nice</button>
+      <section class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <button data-phrase="Hello!" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">Hello</button>
+        <button data-phrase="Thank you!" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">Thank you</button>
+        <button data-phrase="Yes" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">Yes</button>
+        <button data-phrase="No" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">No</button>
+        <button data-phrase="I need help" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">Help</button>
+        <button data-phrase="I love you" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">I love you</button>
+        <button data-phrase="Please wait" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">Wait</button>
+        <button data-phrase="Nice to meet you!" class="cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900 p-2 text-sm font-semibold active:bg-white active:text-black">Nice</button>
       </section>
 
       <!-- Controls -->
       <section class="flex flex-wrap items-center gap-4">
-        <button id="startBtn" class="cursor-pointer rounded-full bg-[#2fd572] px-7 py-3 text-base font-bold text-[#06240f] disabled:cursor-wait disabled:opacity-50">Start</button>
-        <label class="flex items-center gap-2 text-sm text-[#8b91ad]">
-          <input type="checkbox" id="autoSpeak" checked class="accent-[#4f8cff]" />
+        <button id="startBtn" class="cursor-pointer rounded-full bg-white px-7 py-3 text-base font-bold text-black disabled:cursor-wait disabled:opacity-50">Start</button>
+        <label class="flex items-center gap-2 text-sm text-neutral-400">
+          <input type="checkbox" id="autoSpeak" checked class="accent-white" />
           Auto-speak my signs
         </label>
-        <label class="flex items-center gap-2 text-sm text-[#8b91ad]">
-          <input type="checkbox" id="listenToggle" checked class="accent-[#2fd572]" />
+        <label class="flex items-center gap-2 text-sm text-neutral-400">
+          <input type="checkbox" id="listenToggle" checked class="accent-white" />
           Captions on
         </label>
       </section>
 
       <!-- Status line: model loading, errors, etc. -->
-      <footer id="status" class="min-h-4 pb-2 text-center text-xs text-[#8b91ad]">Loading…</footer>
+      <footer id="status" class="min-h-4 pb-2 text-center text-xs text-neutral-400">Loading…</footer>
     </main>
 
     <script type="module" src="/src/main.ts"></script>
