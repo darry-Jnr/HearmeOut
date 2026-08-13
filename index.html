@@ -6,54 +6,57 @@
     <meta name="theme-color" content="#0b0d17" />
     <title>HearMe Out</title>
   </head>
-  <body>
-    <main class="app">
-      <!-- Camera view with the hand skeleton drawn on top -->
-      <section class="camera-box">
-        <video id="camera" autoplay playsinline muted></video>
-        <canvas id="overlay"></canvas>
-        <div id="cameraHint" class="camera-hint">Sign toward the camera</div>
-      </section>
+  <body class="min-h-dvh bg-[#0b0d17] text-[#eef1ff] font-sans">
+    <main class="mx-auto flex h-dvh max-w-3xl flex-col gap-3 overflow-y-auto px-4 py-4">
 
-      <!-- What the app heard you sign (then it speaks this) -->
-      <section class="said-box">
-        <div class="label">You said</div>
-        <div id="youSaid" class="big-text">—</div>
+      <!-- The camera, big and in the middle of the screen -->
+      <section class="relative flex-1 min-h-[320px] overflow-hidden rounded-3xl bg-black">
+        <video id="camera" autoplay playsinline muted class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></video>
+        <canvas id="overlay" class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></canvas>
+        <div class="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
+          <span class="rounded-full bg-black/60 px-4 py-1 text-xs text-[#cfd4ea]">Sign toward the camera</span>
+        </div>
+
+        <!-- What the app heard you sign, floating on the camera -->
+        <div class="pointer-events-none absolute inset-x-3 bottom-3 rounded-2xl bg-black/50 p-3 backdrop-blur-sm">
+          <div class="text-[11px] uppercase tracking-widest text-[#8b91ad]">You said</div>
+          <div id="youSaid" class="text-4xl font-extrabold leading-tight break-words">—</div>
+        </div>
       </section>
 
       <!-- What the other person said, live captions -->
-      <section class="heard-box">
-        <div class="label">They said</div>
-        <div id="theySaid" class="big-text">—</div>
+      <section class="rounded-2xl border-l-4 border-[#2fd572] bg-[#161a2b] p-3">
+        <div class="text-[11px] uppercase tracking-widest text-[#8b91ad]">They said</div>
+        <div id="theySaid" class="text-2xl font-bold leading-snug break-words">—</div>
       </section>
 
       <!-- Quick phrases: always works, even if the AI misses a sign -->
-      <section class="phrases">
-        <button data-phrase="Hello!">Hello</button>
-        <button data-phrase="Thank you!">Thank you</button>
-        <button data-phrase="Yes">Yes</button>
-        <button data-phrase="No">No</button>
-        <button data-phrase="I need help">Help</button>
-        <button data-phrase="I love you">I love you</button>
-        <button data-phrase="Please wait">Wait</button>
-        <button data-phrase="Nice to meet you!">Nice</button>
+      <section class="grid grid-cols-4 gap-2">
+        <button data-phrase="Hello!" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Hello</button>
+        <button data-phrase="Thank you!" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Thank you</button>
+        <button data-phrase="Yes" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Yes</button>
+        <button data-phrase="No" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">No</button>
+        <button data-phrase="I need help" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Help</button>
+        <button data-phrase="I love you" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">I love you</button>
+        <button data-phrase="Please wait" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Wait</button>
+        <button data-phrase="Nice to meet you!" class="cursor-pointer rounded-xl border border-[#2a3050] bg-[#161a2b] p-2 text-sm font-semibold active:bg-[#4f8cff]">Nice</button>
       </section>
 
       <!-- Controls -->
-      <section class="controls">
-        <button id="startBtn" class="start-btn">Start</button>
-        <label class="toggle">
-          <input type="checkbox" id="autoSpeak" checked />
+      <section class="flex flex-wrap items-center gap-4">
+        <button id="startBtn" class="cursor-pointer rounded-full bg-[#2fd572] px-7 py-3 text-base font-bold text-[#06240f] disabled:cursor-wait disabled:opacity-50">Start</button>
+        <label class="flex items-center gap-2 text-sm text-[#8b91ad]">
+          <input type="checkbox" id="autoSpeak" checked class="accent-[#4f8cff]" />
           Auto-speak my signs
         </label>
-        <label class="toggle">
-          <input type="checkbox" id="listenToggle" checked />
+        <label class="flex items-center gap-2 text-sm text-[#8b91ad]">
+          <input type="checkbox" id="listenToggle" checked class="accent-[#2fd572]" />
           Captions on
         </label>
       </section>
 
       <!-- Status line: model loading, errors, etc. -->
-      <footer id="status" class="status">Loading…</footer>
+      <footer id="status" class="min-h-4 pb-2 text-center text-xs text-[#8b91ad]">Loading…</footer>
     </main>
 
     <script type="module" src="/src/main.ts"></script>
