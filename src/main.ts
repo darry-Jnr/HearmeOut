@@ -20,6 +20,40 @@ const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
 const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
 const listenToggle = document.querySelector<HTMLInputElement>("#listenToggle")!;
 
+// The "Type a message" box.
+const typeBtn = document.querySelector<HTMLButtonElement>("#typeBtn")!;
+const typeBox = document.querySelector<HTMLElement>("#typeBox")!;
+const typeInput = document.querySelector<HTMLInputElement>("#typeInput")!;
+const typeSend = document.querySelector<HTMLButtonElement>("#typeSend")!;
+const typeCancel = document.querySelector<HTMLButtonElement>("#typeCancel")!;
+
+function openTypeBox() {
+  typeBox.classList.remove("hidden");
+  typeBox.classList.add("flex");
+  typeInput.focus();
+}
+
+function closeTypeBox() {
+  typeBox.classList.add("hidden");
+  typeBox.classList.remove("flex");
+  typeInput.value = "";
+}
+
+function sendTypedMessage() {
+  const text = typeInput.value.trim();
+  if (!text) return;
+  setYouSaid(text);
+  speak(text);
+  closeTypeBox();
+}
+
+typeBtn.addEventListener("click", openTypeBox);
+typeCancel.addEventListener("click", closeTypeBox);
+typeSend.addEventListener("click", sendTypedMessage);
+typeInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") sendTypedMessage();
+});
+
 let running = false;
 let animationFrame = 0;
 
