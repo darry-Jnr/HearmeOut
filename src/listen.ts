@@ -57,5 +57,11 @@ export function startListening() {
     if (enabled) recognition?.start();
   };
 
-  recognition.start();
+  try {
+    recognition.start();
+  } catch (err) {
+    // A mic error (e.g. permission denied) must never break the whole app.
+    recognition = null;
+    showStatus("Captions off: " + (err instanceof Error ? err.message : "mic error"), "error");
+  }
 }

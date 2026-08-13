@@ -8,7 +8,11 @@ export function showStatus(message: string, kind: "info" | "good" | "error" = "i
   statusEl.textContent = message;
   statusEl.classList.remove("text-neutral-400", "text-white", "font-bold");
   statusEl.classList.add(
-    kind === "good" ? "text-white" : kind === "error" ? "text-white font-bold" : "text-neutral-400"
+    ...(kind === "good"
+      ? ["text-white"]
+      : kind === "error"
+        ? ["text-white", "font-bold"]
+        : ["text-neutral-400"])
   );
 }
 
