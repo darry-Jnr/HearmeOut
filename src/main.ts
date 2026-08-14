@@ -18,6 +18,17 @@ import { setYouSaid, setTheySaid, showStatus } from "./ui";
 import { resetZoom } from "./zoom";
 import { createTypeBox } from "./typeBox";
 import { createHandFeedback } from "./feedback";
+import { createControls } from "./controls";
+import { createDocModal } from "./docModal";
+
+// Mount the control row before anything looks up its buttons below.
+document.querySelector("#controls")?.replaceChildren(createControls());
+
+// The documentation is an in-app modal now (no /doc page), so the about
+// button opens it without changing the URL or stopping the camera.
+const docModal = createDocModal();
+document.body.append(docModal.element);
+document.querySelector<HTMLButtonElement>("#docBtn")!.addEventListener("click", docModal.open);
 
 const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
 const startIcon = document.querySelector<HTMLImageElement>("#startIcon")!;

@@ -45,34 +45,10 @@ function apiSpeakDev(): Plugin {
   };
 }
 
-// Serves the doc page at the clean URL /doc (same as the vercel.json
-// rewrite). Vite only serves .html files by their real name, so we point
-// /doc at /doc.html before Vite's static middleware runs.
-function docDev(): Plugin {
-  return {
-    name: "doc-dev",
-    configureServer(server) {
-      server.middlewares.use("/doc", (req: any, _res: any, next: any) => {
-        if (req.url === "/doc") req.url = "/doc.html";
-        next();
-      });
-    },
-  };
-}
-
 // Vite builds a plain static web app. Tailwind generates the CSS classes,
 // and apiSpeakDev() wires up /api/speak for local testing.
 export default defineConfig({
-  plugins: [tailwindcss(), apiSpeakDev(), docDev()],
-  // Build both the app (index.html) and the doc page (doc.html).
-  build: {
-    rollupOptions: {
-      input: {
-        index: "index.html",
-        doc: "doc.html",
-      },
-    },
-  },
+  plugins: [tailwindcss(), apiSpeakDev()],
   server: {
     host: true,
   },
