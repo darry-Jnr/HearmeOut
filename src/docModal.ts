@@ -14,11 +14,15 @@ export function createDocModal(): DocModal {
   modal.className = "fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4";
 
   modal.innerHTML = `
-    <div class="flex h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-neutral-700 bg-neutral-950 shadow-2xl">
-      <header class="flex shrink-0 items-center justify-between gap-4 border-b border-neutral-800 px-6 py-4">
-        <div class="font-logo text-xl font-medium text-white">
-          hearmeout <span class="text-neutral-600">|</span>
-          <span class="text-neutral-400">how to use</span>
+    <div data-panel class="flex h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-neutral-700 bg-neutral-950 shadow-2xl will-change-transform">
+      <!-- Dragging the header moves the modal around (laptop/mouse only). -->
+      <header data-drag class="flex shrink-0 cursor-move touch-none select-none items-center justify-between gap-4 border-b border-neutral-800 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-neutral-600" title="Drag to move">⠿</span>
+          <div class="font-logo text-xl font-medium text-white">
+            hearmeout <span class="text-neutral-600">|</span>
+            <span class="text-neutral-400">how to use</span>
+          </div>
         </div>
         <button data-close class="flex cursor-pointer items-center gap-2 rounded-full border border-neutral-600 bg-black/70 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm hover:bg-neutral-900 active:bg-white active:text-black">Close</button>
       </header>
@@ -92,13 +96,54 @@ export function createDocModal(): DocModal {
 
           <section id="controls">
             <h2 class="text-2xl font-bold">Controls</h2>
-            <ul class="mt-4 list-disc space-y-2 pl-5 text-sm text-neutral-300">
-              <li><span class="text-white">Start / Stop</span> — turns the camera on and off.</li>
-              <li><span class="text-white">Mute</span> — silences the spoken voice; the text still shows.</li>
-              <li><span class="text-white">Type</span> — write a message instead of signing.</li>
-              <li><span class="text-white">Auto-speak my signs</span> — say each recognized sign out loud (on by default).</li>
-              <li><span class="text-white">Captions on</span> — show the other person's words live under "They said".</li>
-              <li><span class="text-white">Zoom (− / +)</span> — desktop only; phones pinch naturally.</li>
+            <ul class="mt-4 space-y-2 text-sm text-neutral-300">
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white">
+                  <img src="/start.png" alt="Start" class="h-3.5 w-3.5" />
+                </span>
+                <span><span class="text-white">Start</span> — turns the camera on.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-500">
+                  <img src="/stop.png" alt="Stop" class="h-3.5 w-3.5" />
+                </span>
+                <span><span class="text-white">Stop</span> — turns the camera off.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-neutral-600 bg-black/70">
+                  <img src="/mute.png" alt="Muted" class="h-3.5 w-3.5" />
+                </span>
+                <span><span class="text-white">Mute</span> — silences the spoken voice; the text still shows.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-neutral-600 bg-black/70">
+                  <img src="/unmute.png" alt="Unmuted" class="h-3.5 w-3.5" />
+                </span>
+                <span><span class="text-white">Unmute</span> — turns the spoken voice back on.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-neutral-600 bg-black/70">
+                  <img src="/type.png" alt="Type" class="h-3.5 w-3.5" />
+                </span>
+                <span><span class="text-white">Type</span> — write a message instead of signing.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span><span class="text-white">Auto-speak my signs</span> — say each recognized sign out loud (on by default).</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span><span class="text-white">Captions on</span> — show the other person's words live under "They said".</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-white">•</span>
+                <span><span class="text-white">Zoom (− / +)</span> — desktop only; phones pinch naturally.</span>
+              </li>
             </ul>
           </section>
 
@@ -128,12 +173,62 @@ export function createDocModal(): DocModal {
     </div>
   `;
 
+  const panel = modal.querySelector<HTMLElement>("[data-panel]")!;
+  const header = modal.querySelector<HTMLElement>("[data-drag]")!;
+
+  // Where the modal has been dragged to, so it stays put until reopened.
+  let offsetX = 0;
+  let offsetY = 0;
+
   function open() {
+    // Re-center the modal every time it opens.
+    offsetX = 0;
+    offsetY = 0;
+    panel.style.transform = "";
     modal.classList.remove("hidden");
   }
 
   function close() {
     modal.classList.add("hidden");
+  }
+
+  // Drag-to-move on the header. Only wired up for fine pointers (mouse,
+  // trackpad) — on touch screens it would fight with scrolling.
+  if (window.matchMedia("(pointer: fine)").matches) {
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    header.addEventListener("pointerdown", (event) => {
+      if (event.target instanceof HTMLElement && event.target.closest("[data-close]")) return;
+      dragging = true;
+      startX = event.clientX;
+      startY = event.clientY;
+      header.setPointerCapture(event.pointerId);
+      header.classList.add("cursor-grabbing");
+    });
+
+    header.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      offsetX += event.clientX - startX;
+      offsetY += event.clientY - startY;
+      startX = event.clientX;
+      startY = event.clientY;
+      panel.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    });
+
+    const stopDrag = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      header.classList.remove("cursor-grabbing");
+      try {
+        header.releasePointerCapture(event.pointerId);
+      } catch {
+        // Pointer was already released; nothing to do.
+      }
+    };
+    header.addEventListener("pointerup", stopDrag);
+    header.addEventListener("pointercancel", stopDrag);
   }
 
   // Nav links scroll the matching section into view (inside the modal).

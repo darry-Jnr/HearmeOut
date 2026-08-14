@@ -1,12 +1,13 @@
 # HearMe Out
 
-A hackathon proof-of-concept: sign toward the camera and the app speaks your
-words out loud. When the other person replies, their words appear as captions.
-Or just type a message. Everything runs in your browser.
+Sign toward the camera and the app speaks your words out loud. When the other
+person replies, their words appear as captions. Or just type a message.
+Everything runs in your browser.
 
-> Honest scope: this prototype recognizes a starter set of hand gestures
-> (hello, yes, no, I love you, etc.), not full ASL. It proves the loop
-> "sign → spoken voice → spoken reply → captions" works on a phone.
+> Scope: the recognition engine currently understands a starter set of hand
+> gestures (hello, yes, no, I love you, etc.) via an on-device MediaPipe model.
+> It proves the loop "sign → spoken voice → spoken reply → captions" works on a
+> phone, and the gesture set is easy to extend (see `src/translate.ts`).
 
 ## Try it
 

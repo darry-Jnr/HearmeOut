@@ -4,70 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
-    <title>HearMe Out</title>
+    <meta name="description" content="HearMe Out — sign your words and they speak out loud. Read the reply as it's captioned live." />
+    <title>HearMe Out — sign, speak, and be heard</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
-  <body class="min-h-dvh bg-black text-white font-sans">
-    <!-- The camera fills the entire screen -->
-    <main class="relative h-dvh w-full overflow-hidden">
-      <section class="absolute inset-0 bg-neutral-950">
-        <!-- Zooming scales this layer, keeping the video and skeleton in sync -->
-        <div id="zoomLayer" class="absolute inset-0">
-          <video id="camera" autoplay playsinline muted class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></video>
-          <canvas id="overlay" class="absolute inset-0 h-full w-full -scale-x-100 object-cover"></canvas>
-        </div>
-      </section>
-
-      <!-- Desktop-only logo -->
-      <div class="pointer-coarse:hidden absolute left-3 top-3 z-10 hidden font-logo text-xl font-medium text-white sm:block">
-        hearmeout
+  <body class="flex min-h-dvh flex-col bg-black text-white font-sans antialiased">
+    <!-- Header -->
+    <header class="sticky top-0 z-10 border-b border-neutral-800/60 bg-black/80 backdrop-blur-sm">
+      <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
+        <div class="font-logo text-xl font-medium text-white">hearmeout</div>
       </div>
+    </header>
 
-      <!-- Zoom control: each press steps the zoom by one notch (desktop only — phones pinch naturally) -->
-      <div class="pointer-coarse:hidden hidden sm:flex absolute right-3 top-3 z-10 items-center gap-1 rounded-full border border-neutral-700 bg-black/70 p-1 backdrop-blur-sm">
-        <button id="zoomOut" class="cursor-pointer rounded-full px-3 py-1 text-lg font-bold text-white active:bg-white active:text-black" aria-label="Zoom out">−</button>
-        <span id="zoomValue" class="w-12 text-center text-xs text-neutral-300">1.0×</span>
-        <button id="zoomIn" class="cursor-pointer rounded-full px-3 py-1 text-lg font-bold text-white active:bg-white active:text-black" aria-label="Zoom in">+</button>
-      </div>
-
-      <!-- Everything else floats on top of the camera -->
-      <div class="absolute inset-0 flex flex-col">
-        <!-- Top: hint + status -->
-        <div class="flex flex-col items-center gap-1.5 p-3">
-          <span class="rounded-full bg-black/70 px-4 py-1 text-xs text-neutral-300">Sign toward the camera</span>
-          <footer id="status" class="min-h-4 text-center text-xs text-neutral-400">Loading…</footer>
-        </div>
-
-        <!-- Middle: what the app heard you sign, huge -->
-        <div class="flex flex-1 items-center justify-center px-4">
-          <div id="youSaid" class="max-w-4xl text-center text-5xl font-extrabold leading-tight break-words drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] sm:text-6xl md:text-7xl">—</div>
-        </div>
-
-        <!-- Bottom: captions, quick phrases and controls -->
-        <div class="flex flex-col gap-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 pt-10 sm:p-5 sm:pt-14">
-          <!-- What the other person said, live captions -->
-          <div class="rounded-2xl bg-black/60 p-3 backdrop-blur-sm sm:p-4">
-            <div class="text-[11px] uppercase tracking-widest text-neutral-400">They said</div>
-            <div id="theySaid" class="text-xl font-bold leading-snug break-words sm:text-2xl">—</div>
-          </div>
-
-          <!-- Quick phrases: always works, even if the AI misses a sign -->
-          <div class="grid grid-cols-4 gap-2">
-            <button data-phrase="Hello!" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">Hello</button>
-            <button data-phrase="Thank you!" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">Thank you</button>
-            <button data-phrase="Yes" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">Yes</button>
-            <button data-phrase="No" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">No</button>
-            <button data-phrase="I need help" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">Help</button>
-            <button data-phrase="I love you" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">I love you</button>
-            <button data-phrase="Please wait" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">Wait</button>
-            <button data-phrase="Nice to meet you!" class="cursor-pointer rounded-xl border border-neutral-700 bg-black/70 p-2 text-sm font-semibold backdrop-blur-sm active:bg-white active:text-black">Nice</button>
-          </div>
-
-          <!-- Controls (mounted by src/controls.ts) -->
-          <div id="controls"></div>
-        </div>
-      </div>
+    <!-- Hero: problem-first -->
+    <main class="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center px-6 text-center">
+      <h1 class="font-display text-4xl font-bold leading-tight tracking-tight text-neutral-100 sm:text-6xl sm:leading-tight">
+        Sign language shouldn't be a language barrier.
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-300 sm:text-xl">
+        AI-powered: sign toward your camera and HearMe Out speaks your words out
+        loud — then turns the other person's reply into live captions. Right in
+        your browser, on your phone. No install, no accounts.
+      </p>
+      <a href="/app" class="mt-10 inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-10 py-3.5 text-base font-bold text-black hover:opacity-90 active:bg-neutral-300">
+        Start
+      </a>
     </main>
 
-    <script type="module" src="/src/main.ts"></script>
+    <!-- Footer -->
+    <footer class="py-8 text-center text-sm text-neutral-500">
+      Made with <span class="text-white">❤</span> for the Hackathon
+    </footer>
   </body>
 </html>

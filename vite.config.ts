@@ -45,10 +45,35 @@ function apiSpeakDev(): Plugin {
   };
 }
 
-// Vite builds a plain static web app. Tailwind generates the CSS classes,
-// and apiSpeakDev() wires up /api/speak for local testing.
+// Serves the app page at the clean URL /app (same as the vercel.json
+// rewrite). Vite only serves .html files by their real name, so we point
+// /app at /app.html before Vite's static middleware runs.
+function appDev(): Plugin {
+  return {
+    name: "app-dev",
+    configureServer(server) {
+      server.middlewares.use("/app", (req: any, _res: any, next: any) => {
+        if (req.url === "/app") req.url = "/app.html";
+        next();
+      });
+    },
+  };
+}
+
+// Vite builds a plain static web app: the landing page (index.html) and the
+// camera app (app.html). Tailwind generates the CSS classes, and
+// apiSpeakDev() wires up /api/speak for local testing.
 export default defineConfig({
-  plugins: [tailwindcss(), apiSpeakDev()],
+  plugins: [tailwindcss(), apiSpeakDev(), appDev()],
+  // Build both the landing page (index.html) and the app (app.html).
+  build: {
+    rollupOptions: {
+      input: {
+        index: "index.html",
+        app: "app.html",
+      },
+    },
+  },
   server: {
     host: true,
   },
