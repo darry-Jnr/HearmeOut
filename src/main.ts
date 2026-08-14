@@ -7,7 +7,7 @@ import "./style.css";
 import { startCamera, stopCamera } from "./camera";
 import { Vision } from "./vision";
 import { phraseTracker } from "./translate";
-import { speak } from "./speak";
+import { speak, setMuted, isMuted } from "./speak";
 import {
   startListening,
   stopListening,
@@ -17,11 +17,30 @@ import {
 import { setYouSaid, setTheySaid, showStatus } from "./ui";
 import { resetZoom } from "./zoom";
 import { createTypeBox } from "./typeBox";
+import { createHandFeedback } from "./feedback";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startBtn")!;
 const startIcon = document.querySelector<HTMLImageElement>("#startIcon")!;
+const muteBtn = document.querySelector<HTMLButtonElement>("#muteBtn")!;
+const muteIcon = document.querySelector<HTMLImageElement>("#muteIcon")!;
 const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
 const listenToggle = document.querySelector<HTMLInputElement>("#listenToggle")!;
+
+// Mute/unmute all spoken output (text still shows).
+function renderMute() {
+  const muted = isMuted();
+  muteIcon.src = muted ? "/mute.png" : "/unmute.png";
+  muteIcon.alt = muted ? "Muted" : "Sound on";
+  muteBtn.classList.toggle("opacity-60", muted);
+  muteBtn.setAttribute("aria-label", muted ? "Unmute" : "Mute");
+}
+
+muteBtn.addEventListener("click", () => {
+  setMuted(!isMuted());
+  renderMute();
+  showStatus(isMuted() ? "Sound muted" : "Sound on", isMuted() ? "error" : "info");
+});
+renderMute();
 
 // The "Type a message" popup — a separate component that builds its own HTML.
 const typeBtn = document.querySelector<HTMLButtonElement>("#typeBtn")!;
@@ -36,6 +55,7 @@ typeBtn.addEventListener("click", typeBox.open);
 
 let running = false;
 let animationFrame = 0;
+let handFeedback: ReturnType<typeof createHandFeedback> | null = null;
 
 // Start = white with a play icon, Stop = red with a stop icon.
 function setStartButton(label: "Start" | "Stop") {
@@ -61,6 +81,7 @@ async function startEverything() {
     // 1) Turn on the camera (asks the user for permission).
     const video = await startCamera();
     resetZoom();
+    if (!handFeedback) handFeedback = createHandFeedback({ video });
 
     // 2) Load the MediaPipe gesture model (downloads ~8 MB once).
     showStatus("Loading the sign recognition model…");
@@ -78,6 +99,7 @@ async function startEverything() {
     const tick = () => {
       const detection = vision.detect(video);
       tracker.feed(detection);
+      handFeedback?.feed(detection);
       animationFrame = requestAnimationFrame(tick);
     };
     animationFrame = requestAnimationFrame(tick);
@@ -105,6 +127,7 @@ function stopEverything() {
   cancelAnimationFrame(animationFrame);
   stopCamera();
   stopListening();
+  handFeedback?.reset();
 
   setYouSaid("—");
   setTheySaid("");
