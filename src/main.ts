@@ -36,6 +36,18 @@ const muteBtn = document.querySelector<HTMLButtonElement>("#muteBtn")!;
 const muteIcon = document.querySelector<HTMLImageElement>("#muteIcon")!;
 const autoSpeakToggle = document.querySelector<HTMLInputElement>("#autoSpeak")!;
 const listenToggle = document.querySelector<HTMLInputElement>("#listenToggle")!;
+const loading = document.querySelector<HTMLElement>("#loading")!;
+
+// Full-screen loading overlay while the camera/model warms up.
+function showLoading() {
+  loading.classList.remove("hidden");
+  loading.classList.add("flex");
+}
+
+function hideLoading() {
+  loading.classList.add("hidden");
+  loading.classList.remove("flex");
+}
 
 // Mute/unmute all spoken output (text still shows).
 function renderMute() {
@@ -87,6 +99,7 @@ async function startEverything() {
   // always sees it change to "Stop". It only goes back to "Start" on error.
   startButton.disabled = true;
   setStartButton("Stop");
+  showLoading();
 
   try {
     // 1) Turn on the camera (asks the user for permission).
@@ -98,6 +111,7 @@ async function startEverything() {
     showStatus("Loading the sign recognition model…");
     const vision = new Vision();
     await vision.load();
+    hideLoading();
     showStatus("Model ready!");
 
     // 3) Set up the "hold a sign → speak a word" logic.
@@ -127,6 +141,7 @@ async function startEverything() {
     running = false;
     startButton.disabled = false;
     setStartButton("Start");
+    hideLoading();
     showStatus("Could not start: " + (err instanceof Error ? err.message : err), "error");
   }
 }

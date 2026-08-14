@@ -68,6 +68,12 @@
       </div>
     </main>
 
+    <!-- Full-screen loading overlay: shown from Start click until the model is ready -->
+    <div id="loading" class="pointer-events-none fixed inset-0 z-20 hidden flex-col items-center justify-center gap-4 bg-black/80 backdrop-blur-sm">
+      <img src="/bars.svg" alt="Loading…" class="h-20 w-20 sm:h-24 sm:w-24" />
+      <p class="text-sm text-neutral-300">Loading the sign recognition model…</p>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

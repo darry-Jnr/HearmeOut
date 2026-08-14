@@ -35,5 +35,29 @@
     <footer class="py-8 text-center text-sm text-neutral-500">
       Made with <span class="text-white">❤</span> for the Hackathon
     </footer>
+
+    <!-- Loading screen: brief pause before the app opens -->
+    <div id="loading" class="fixed inset-0 z-50 hidden flex-col items-center justify-center gap-4 bg-black/90 backdrop-blur-sm">
+      <img src="/bars.svg" alt="Loading…" class="h-20 w-20 sm:h-24 sm:w-24" />
+      <p class="text-sm text-neutral-300">Opening the app…</p>
+    </div>
+
+    <script>
+      // Show a second of loading, then open the app.
+      let opening = false;
+      document.querySelectorAll('a[href="/app"]').forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          if (opening) return;
+          opening = true;
+          const overlay = document.getElementById("loading");
+          overlay.classList.remove("hidden");
+          overlay.classList.add("flex");
+          setTimeout(() => {
+            location.href = "/app";
+          }, 1000);
+        });
+      });
+    </script>
   </body>
 </html>
