@@ -121,10 +121,16 @@ async function startEverything() {
     });
 
     // 4) Loop forever: read each camera frame and look for a sign.
+    // A single bad frame must never kill the loop, or the whole app looks
+    // "stuck at Model ready" with no detection.
     const tick = () => {
-      const detection = vision.detect(video);
-      tracker.feed(detection);
-      handFeedback?.feed(detection);
+      try {
+        const detection = vision.detect(video);
+        tracker.feed(detection);
+        handFeedback?.feed(detection);
+      } catch (err) {
+        console.error("Frame failed:", err);
+      }
       animationFrame = requestAnimationFrame(tick);
     };
     animationFrame = requestAnimationFrame(tick);

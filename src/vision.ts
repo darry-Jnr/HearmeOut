@@ -4,9 +4,22 @@
 // skeleton on top of the video so you can see it "seeing" your hands.
 
 import { FilesetResolver, GestureRecognizer } from "@mediapipe/tasks-vision";
+import { showStatus } from "./ui";
 
 const MODEL_URL = "/models/gesture_recognizer.task";
 const WASM_DIR = "/wasm"; // local copy of the MediaPipe wasm files
+
+// MediaPipe needs a WebGL context even when the model itself runs on the CPU.
+// Chrome returns null here when hardware acceleration is off or the GPU is
+// broken — Firefox and Edge usually still have a working context.
+function isWebGLSupported(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
 
 // The built-in model understands these 7 gestures.
 // We translate them into spoken words in translate.ts.
@@ -27,8 +40,10 @@ export interface Detection {
 
 export class Vision {
   private recognizer: GestureRecognizer | null = null;
+  private fileset: any = null;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
+  private glReported = false;
 
   constructor() {
     this.canvas = document.querySelector<HTMLCanvasElement>("#overlay")!;
@@ -37,19 +52,22 @@ export class Vision {
 
   // Load the model. Call once, before starting the loop.
   async load(): Promise<void> {
-    const fileset = await FilesetResolver.forVisionTasks(WASM_DIR);
-
-    try {
-      // Most phones can run the model on the GPU (faster).
-      this.recognizer = await this.build(fileset, "GPU");
-    } catch {
-      // Some phones can't — the CPU version always works, just a bit slower.
-      this.recognizer = await this.build(fileset, "CPU");
+    if (!isWebGLSupported()) {
+      throw new Error(
+        "WebGL is off. Enable hardware acceleration in Chrome (Settings → System), or use Edge.",
+      );
     }
+
+    this.fileset = await FilesetResolver.forVisionTasks(WASM_DIR);
+
+    // Run on the CPU delegate. The GPU delegate loads fine in Chrome but
+    // silently returns "no hand" on some GPUs/drivers, while the CPU version
+    // works everywhere — Firefox already proves it's fast on this machine.
+    this.recognizer = await this.build("CPU");
   }
 
-  private build(fileset: any, delegate: "GPU" | "CPU") {
-    return GestureRecognizer.createFromOptions(fileset, {
+  private build(delegate: "GPU" | "CPU") {
+    return GestureRecognizer.createFromOptions(this.fileset, {
       baseOptions: {
         modelAssetPath: MODEL_URL,
         delegate,
@@ -72,7 +90,15 @@ export class Vision {
       this.canvas.height = video.videoHeight;
     }
 
-    const result = this.recognizer.recognizeForVideo(video, performance.now());
+    // performance.now() always increases, which is all MediaPipe's VIDEO mode
+    // needs for its timestamps. A thrown frame must not kill the caller's loop.
+    let result;
+    try {
+      result = this.recognizer.recognizeForVideo(video, performance.now());
+    } catch (err) {
+      this.handleFailure(err);
+      return { gesture: null, score: 0, handCount: 0 };
+    }
 
     this.drawSkeleton(result.landmarks);
 
@@ -82,6 +108,24 @@ export class Vision {
       score: gesture?.score ?? 0,
       handCount: result.landmarks?.length ?? 0,
     };
+  }
+
+  // A frame failed. WebGL breakage (the "activeTexture" / "out of bounds"
+  // errors Chrome throws) is reported to the user once and then silenced, so
+  // the console isn't flooded every frame. Other errors are logged once too.
+  private handleFailure(err: unknown) {
+    if (this.glReported) return;
+    const text = err instanceof Error ? err.message : String(err);
+    if (/activeTexture|out of bounds|webgl|gl_|gpu/i.test(text)) {
+      this.glReported = true;
+      console.error("Hand tracking needs WebGL and it isn't available:", err);
+      showStatus(
+        "Camera needs WebGL — enable hardware acceleration in Chrome (Settings → System) or use Edge.",
+        "error",
+      );
+    } else {
+      console.error("Frame skipped:", err);
+    }
   }
 
   // Draw little circles + lines on the canvas to show the hand skeleton.
